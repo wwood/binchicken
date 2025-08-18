@@ -167,6 +167,8 @@ rule singlem_pipe_reads:
         runtime = get_runtime(base_hours = 24),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/pipe/{wildcards.read}_read", attempt)
     group: "singlem_pipe"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem pipe "
@@ -218,6 +220,8 @@ rule genome_transcripts:
         runtime = get_runtime(base_hours = 1),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/transcripts/{wildcards.genome}_protein", attempt)
     group: "singlem_bins"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e prodigal "
         "prodigal "
@@ -241,6 +245,8 @@ rule singlem_pipe_genomes:
         runtime = get_runtime(base_hours = 1),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/pipe/{wildcards.genome}_bin", attempt)
     group: "singlem_bins"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem pipe "
@@ -277,6 +283,8 @@ rule singlem_summarise_genomes:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 24),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/summarise/{wildcards.version}genomes", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem summarise "
@@ -306,6 +314,8 @@ rule singlem_appraise:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 24),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/appraise/appraise", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem appraise "
@@ -355,6 +365,8 @@ rule update_appraise:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 24),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/appraise/appraise", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem appraise --stream-inputs "
@@ -409,6 +421,8 @@ rule query_processing_split:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 48),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/query/processing_split_{wildcards.split}", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -435,6 +449,8 @@ rule query_processing:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 48),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/query/processing", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         "echo 'Start' > {resources.log_path} && "
         "awk '(NR == 1 || FNR > 1)' {input.unbinned} > {output.unbinned} && "
@@ -473,6 +489,8 @@ rule remove_off_targets:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 24),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/appraise/remove_off_targets", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem summarise "
@@ -495,6 +513,8 @@ rule no_genomes:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/appraise/appraise", attempt)
     params:
         script = scripts_dir + "/no_genomes.py",
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -591,6 +611,8 @@ rule abundance_weighting:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/appraise/abundance_weighting", attempt)
     benchmark:
         benchmarks_dir + "/appraise/abundance_weighting.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -616,6 +638,8 @@ rule sketch_samples:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 96),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/precluster/sketching", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -649,6 +673,8 @@ rule distance_samples:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/precluster/distance", attempt)
     benchmark:
         benchmarks_dir + "/precluster/distance.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "sourmash scripts pairwise "
@@ -725,6 +751,8 @@ rule target_elusive:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/target/target_elusive", attempt)
     benchmark:
         benchmarks_dir + "/target/target_elusive.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -756,6 +784,8 @@ rule target_weighting:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 24),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/target/target_weighting", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -818,6 +848,8 @@ checkpoint cluster_graph:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/target/cluster_graph", attempt)
     benchmark:
         benchmarks_dir + "/target/cluster_graph.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -852,6 +884,8 @@ rule download_read:
         runtime = get_runtime(base_hours = 16),
         downloading = 1,
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/sra/kingfisher_{wildcards.read}", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         "cd {params.dir} && "
         "rm -f {params.name}*.fastq.gz && "
@@ -885,6 +919,8 @@ rule mock_download_sra:
     localrule: True
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/sra/kingfisher", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e kingfisher "
         "mkdir -p {output} && "
@@ -915,6 +951,8 @@ rule qc_reads:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/mapping/{wildcards.read}_qc", attempt)
     benchmark:
         benchmarks_dir + "/mapping/{read}_qc.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e fastp "
         "fastp "
@@ -985,6 +1023,8 @@ rule map_reads:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/mapping/{wildcards.read}_coverm", attempt)
     benchmark:
         benchmarks_dir + "/mapping/{read}_coverm.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e coverm "
         "coverm make "
@@ -1013,6 +1053,8 @@ rule filter_bam_files:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/mapping/{wildcards.read}_filter", attempt)
     benchmark:
         benchmarks_dir + "/mapping/{read}_filter.tsv"
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e coverm "
         "coverm filter "
@@ -1036,6 +1078,8 @@ rule bam_to_fastq:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 4),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/mapping/{wildcards.read}_fastq", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e coverm "
         "samtools fastq "
@@ -1111,6 +1155,8 @@ rule aviary_commands:
     localrule: True
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/aviary_commands", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
@@ -1202,6 +1248,8 @@ rule aviary_assemble:
         runtime = get_runtime(base_hours = 96),
         assembler = get_assemble_assembler,
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/aviary/{wildcards.coassembly}_assemble", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         "export GTDBTK_DATA_PATH=. && "
         "export CHECKM2DB=. && "
@@ -1257,6 +1305,8 @@ rule aviary_recover:
         mem_gb = int(config["aviary_recover_memory"]),
         runtime = "168h",
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/aviary/{wildcards.coassembly}_recover", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         "export CONDA_ENV_PATH=. && "
         f"{pixi_run} -e aviary "
