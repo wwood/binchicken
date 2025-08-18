@@ -56,6 +56,8 @@ rule aviary_download:
         mem_mb=get_mem_mb,
         runtime = get_runtime(base_hours = 16),
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/aviary_downloads", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         "{params.tmpdir} "
         "{params.singlem_metapackage_env} "

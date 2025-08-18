@@ -39,6 +39,8 @@ rule prodigal_bins:
         prodigal_meta = "-p meta" if config["prodigal_meta"] else ""
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/transcripts/{wildcards.bin}", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e prodigal "
         "prodigal -i {input} -d {output.fna} -a {output.faa} "
@@ -54,6 +56,8 @@ rule singlem_pipe_bins:
         singlem_metapackage = config["singlem_metapackage"]
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/pipe/{wildcards.bin}", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem pipe "
@@ -71,6 +75,8 @@ rule singlem_summarise_bins:
         singlem_metapackage = config["singlem_metapackage"]
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/summarise/bins", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e singlem "
         "singlem summarise "
@@ -92,6 +98,8 @@ rule cluster_original_bins:
     threads: 64
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/cluster/original", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e coverm "
         "coverm cluster "
@@ -111,6 +119,8 @@ rule cluster_updated_bins:
     threads: 64
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/cluster/{wildcards.coassembly}", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} -e coverm "
         "coverm cluster "
@@ -158,6 +168,8 @@ rule evaluate:
         64
     resources:
         log_path=lambda wildcards, attempt: setup_log(f"{logs_dir}/evaluate/evaluate", attempt)
+    onerror:
+        shell("cat {resources.log_path} >&2")
     shell:
         f"{pixi_run} "
         "python3 {params.script} "
